@@ -1,0 +1,7 @@
+SERVICE = "Service"
+ROOT_ADMIN = "RootAdmin"
+ADMIN = "Admin"
+INTERVIEWER = "Interviewer"
+APPLICANT = "Applicant"
+
+HERMES = "http://hermes"
