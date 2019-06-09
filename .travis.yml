@@ -1,0 +1,13 @@
+dist: xenial
+language: python
+services:
+  - docker
+python:
+  - '3.7'
+script:
+  - python -m py_compile ostiarius/__main__.py
+deploy:
+  - provider: script
+    script: bash ./docker-deploy.sh
+    on:
+      branch: master
