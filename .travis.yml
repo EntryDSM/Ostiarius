@@ -5,7 +5,7 @@ services:
 python:
   - '3.7'
 script:
-  - python -m py_compile ostiarius/__main__.py
+  - python -c "print('build start')"
 deploy:
   - provider: script
     script: bash ./docker-deploy.sh
