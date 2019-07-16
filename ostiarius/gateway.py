@@ -12,7 +12,6 @@ from requests.exceptions import ConnectionError
 
 import aiofiles
 
-from ostiarius.authorizer import auth
 from ostiarius.const import ROOT_ADMIN, HERMES, SERVICE, ADMIN, APPLICANT, UPLOAD_DIR
 
 bp = Blueprint("user", url_prefix="/api/v1")
