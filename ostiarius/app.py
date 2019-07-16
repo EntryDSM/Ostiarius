@@ -9,6 +9,8 @@ def create_app() -> Sanic:
     _app = Sanic("ostiarius")
 
     _app.config['JWT_SECRET_KEY'] = "Chanel's secret key required"
+    _app.config['RBAC_ENABLE'] = True
+
     JWTManager(_app)
 
     @_app.get('/ping')
