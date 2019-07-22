@@ -1,8 +1,12 @@
+import uuid
+
 from sanic import Sanic
-from sanic.response import text
+from sanic.exceptions import SanicException
+from sanic.response import text, json
 from sanic_jwt_extended import JWTManager
 from sanic_cors import CORS
 
+from ostiarius.exceptions import ServiceUnavailable
 from ostiarius.gateway import bp
 
 
@@ -18,6 +22,13 @@ def create_app() -> Sanic:
     @_app.get('/ping')
     async def ping(request):
         return text("pong")
+
+    @_app.middleware('request')
+    async def add_tracking_id(request):
+        request.headers.update({"X-Tracking-ID": uuid.uuid4().hex})
+
+    _app.error_handler.add(ServiceUnavailable, lambda r, e: json(body={"msg": "Service unavailable"}, status=503))
+    _app.error_handler.add(SanicException, lambda r, e: json(body={"msg": e.args[0]}, status=e.status_code))
 
     _app.blueprint(bp)
 

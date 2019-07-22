@@ -1,4 +1,6 @@
+import asyncio
 import os
+import time
 import uuid
 
 import requests
@@ -13,35 +15,47 @@ from requests.exceptions import ConnectionError
 import aiofiles
 
 from ostiarius.const import ROOT_ADMIN, HERMES, SERVICE, ADMIN, APPLICANT, UPLOAD_DIR
+from ostiarius.exceptions import ServiceUnavailable
 
 bp = Blueprint("user", url_prefix="/api/v1")
 
 
-def trans_request(request: Request, host: str, url: str = None):
-    try:
-        r: Response = getattr(requests, request.method.lower())(
-            url=host+url if url else host+request.path,
-            data=None if request.method == "GET" else request.json,
-            headers=request.headers,
-            params=request.args,
-        )
-    except ConnectionError:
-        return json(
-            body={"msg": "Service unavailable"},
-            status=503
-        )
+def trans_request(request: Request, host: str, url: str = None, token: Token = None, retry: int = 3):
+    headers = request.headers
 
-    if r.status_code / 100 == 5:
-        return json(
-            body={"msg": "Service unavailable"},
-            status=503
-        )
+    if token:
+        headers.update({
+            "X-User-Type": token.raw_jwt["role"],
+            "X-User-Identity": token.raw_jwt["identity"]
+        })
 
-    return json(
-        body=r.json(),
-        headers=r.headers,
-        status=r.status_code,
-    )
+    print(headers)
+
+    for retry_count in range(retry):
+        try:
+            r: Response = getattr(requests, request.method.lower())(
+                url=host+url if url else host+request.path,
+                data=None if request.method == "GET" else request.json,
+                headers=headers,
+                params=request.args,
+            )
+        except ConnectionError:
+            if retry_count + 1 == retry:
+                raise ServiceUnavailable
+            time.sleep(1)
+            continue
+        else:
+            if r.status_code / 100 == 5:
+                if retry_count + 1 == retry:
+                    raise ServiceUnavailable
+                time.sleep(1)
+                continue
+
+            return json(
+                body=r.json(),
+                headers=r.headers,
+                status=r.status_code,
+            )
 
 
 """
@@ -73,91 +87,91 @@ Hermes Routing
 @bp.post('/admin')
 @jwt_required(allow=[ROOT_ADMIN, ])
 async def admin_post(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, HERMES)
+    return trans_request(request, HERMES, token=token)
 
 
 @bp.get('/admin/batch')
 @jwt_required(allow=[ROOT_ADMIN, SERVICE, ])
 async def admin_batch_get(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, HERMES)
+    return trans_request(request, HERMES, token=token)
 
 
 @bp.patch('/admin/<admin_id>')
 @jwt_required(allow=[ROOT_ADMIN, SERVICE, ])
 async def admin_admin_id_patch(request: Request, token: Token, admin_id: str, *args, **kwargs):
-    return trans_request(request, HERMES)
+    return trans_request(request, HERMES, token=token)
 
 
 @bp.delete('/admin/<admin_id>')
 @jwt_required(allow=[ROOT_ADMIN, SERVICE, ])
 async def admin_admin_id_delete(request: Request, token: Token, admin_id: str, *args, **kwargs):
-    return trans_request(request, HERMES)
+    return trans_request(request, HERMES, token=token)
 
 
 @bp.get('/admin/<admin_id>')
 @jwt_required(allow=[ROOT_ADMIN, SERVICE, ])
 async def admin_admin_id_get(request: Request, token: Token, admin_id: str, *args, **kwargs):
-    return trans_request(request, HERMES)
+    return trans_request(request, HERMES, token=token)
 
 
 @bp.get('/admin/me')
 @jwt_required(allow=[ROOT_ADMIN, SERVICE, ])
 async def admin_admin_id_get(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, HERMES, f"/admin/{token.jwt_identity}")
+    return trans_request(request, HERMES, f"/admin/{token.jwt_identity}", token=token)
 
 
 @bp.post('/applicant')
 @jwt_required(allow=[ROOT_ADMIN, SERVICE, ])
 async def applicant_post(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, HERMES)
+    return trans_request(request, HERMES, token=token)
 
 
 @bp.get('/applicant/batch')
 @jwt_required(allow=[ROOT_ADMIN, ])
 async def applicant_batch_get(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, HERMES)
+    return trans_request(request, HERMES, token=token)
 
 
 @bp.patch('/applicant/<email>')
 @jwt_required(allow=[SERVICE, ])
 async def applicant_email_patch(request: Request, token: Token, email: str, *args, **kwargs):
-    return trans_request(request, HERMES)
+    return trans_request(request, HERMES, token=token)
 
 
 @bp.delete('/applicant/<email>')
 @jwt_required(allow=[ROOT_ADMIN, ADMIN, SERVICE, ])
 async def applicant_email_patch(request: Request, token: Token, email: str, *args, **kwargs):
-    return trans_request(request, HERMES)
+    return trans_request(request, HERMES, token=token)
 
 
 @bp.get('/applicant/<email>/status')
 @jwt_required(allow=[ROOT_ADMIN, ADMIN, SERVICE, ])
 async def applicant_email_patch(request: Request, token: Token, email: str, *args, **kwargs):
-    return trans_request(request, HERMES)
+    return trans_request(request, HERMES, token=token)
 
 
 @bp.patch('/applicant/<email>/status')
 @jwt_required(allow=[ROOT_ADMIN, ADMIN, SERVICE, ])
 async def applicant_email_patch(request: Request, token: Token, email: str, *args, **kwargs):
-    return trans_request(request, HERMES)
+    return trans_request(request, HERMES, token=token)
 
 
 @bp.get('/applicant/me')
 @jwt_required(allow=[APPLICANT, ])
 async def applicant_me_get(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, HERMES, f"/applicant/{token.jwt_identity}")
+    return trans_request(request, HERMES, f"/applicant/{token.jwt_identity}", token=token)
 
 
 @bp.patch('/applicant/me')
 @jwt_required(allow=[APPLICANT, ])
 async def applicant_me_patch(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, HERMES, f"/applicant/{token.jwt_identity}")
+    return trans_request(request, HERMES, f"/applicant/{token.jwt_identity}", token=token)
 
 
 @bp.get('/applicant/me/status')
 @jwt_required(allow=[APPLICANT, ])
 async def applicant_me_patch(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, HERMES, f"/applicant/{token.jwt_identity}")
+    return trans_request(request, HERMES, f"/applicant/{token.jwt_identity}", token=token)
 
 
 """
@@ -261,34 +275,34 @@ Louis-Vuitton Routing
 @bp.get('/applicant/<email>/classification')
 @jwt_required(allow=[ADMIN, ROOT_ADMIN])
 async def applicant_me_patch(request: Request, token: Token, email: str, *args, **kwargs):
-    return trans_request(request, HERMES)
+    return trans_request(request, HERMES, token=token)
 
 
 @bp.get('/applicant/me/classification')
 @jwt_required(allow=[APPLICANT, ])
 async def applicant_me_patch(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, HERMES, f"/applicant/{token.jwt_identity}/classification")
+    return trans_request(request, HERMES, f"/applicant/{token.jwt_identity}/classification", token=token)
 
 
 @bp.patch('/applicant/me/classification')
 @jwt_required(allow=[APPLICANT, ])
 async def applicant_me_patch(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, HERMES, f"/applicant/{token.jwt_identity}/classification")
+    return trans_request(request, HERMES, f"/applicant/{token.jwt_identity}/classification", token=token)
 
 
 @bp.get('/applicant/<email>/document')
 @jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
 async def applicant_me_patch(request: Request, token: Token, email: str, *args, **kwargs):
-    return trans_request(request, HERMES)
+    return trans_request(request, HERMES, token=token)
 
 
 @bp.get('/applicant/me/document')
 @jwt_required(allow=[APPLICANT, ])
 async def applicant_me_patch(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, HERMES, f"/applicant/{token.jwt_identity}/document")
+    return trans_request(request, HERMES, f"/applicant/{token.jwt_identity}/document", token=token)
 
 
 @bp.patch('/applicant/me/document')
 @jwt_required(allow=[APPLICANT, ])
 async def applicant_me_patch(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, HERMES, f"/applicant/{token.jwt_identity}/document")
+    return trans_request(request, HERMES, f"/applicant/{token.jwt_identity}/document", token=token)
