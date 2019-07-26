@@ -29,33 +29,24 @@ def trans_request(request: Request, host: str, url: str = None, token: Token = N
             "X-User-Identity": token.raw_jwt["identity"]
         })
 
-    print(headers)
+    try:
+        r: Response = getattr(requests, request.method.lower())(
+            url=host+url if url else host+request.path,
+            data=None if request.method == "GET" else request.json,
+            headers=headers,
+            params=request.args,
+        )
+    except ConnectionError:
+        raise ServiceUnavailable
 
-    for retry_count in range(retry):
-        try:
-            r: Response = getattr(requests, request.method.lower())(
-                url=host+url if url else host+request.path,
-                data=None if request.method == "GET" else request.json,
-                headers=headers,
-                params=request.args,
-            )
-        except ConnectionError:
-            if retry_count + 1 == retry:
-                raise ServiceUnavailable
-            time.sleep(1)
-            continue
-        else:
-            if r.status_code / 100 == 5:
-                if retry_count + 1 == retry:
-                    raise ServiceUnavailable
-                time.sleep(1)
-                continue
+    if r.status_code / 100 == 5:
+        raise ServiceUnavailable
 
-            return json(
-                body=r.json(),
-                headers=r.headers,
-                status=r.status_code,
-            )
+    return json(
+        body=r.json(),
+        headers=r.headers,
+        status=r.status_code,
+    )
 
 
 """
@@ -114,20 +105,20 @@ async def admin_admin_id_get(request: Request, token: Token, admin_id: str, *arg
     return trans_request(request, HERMES, token=token)
 
 
-@bp.get('/admin/me')
-@jwt_required(allow=[ROOT_ADMIN, SERVICE, ])
+@bp.patch('/admin/me')
+@jwt_required(allow=[ROOT_ADMIN, ADMIN, SERVICE, ])
 async def admin_admin_id_get(request: Request, token: Token, *args, **kwargs):
     return trans_request(request, HERMES, f"/admin/{token.jwt_identity}", token=token)
 
 
 @bp.post('/applicant')
-@jwt_required(allow=[ROOT_ADMIN, SERVICE, ])
+@jwt_required(allow=[ROOT_ADMIN, ADMIN, SERVICE, ])
 async def applicant_post(request: Request, token: Token, *args, **kwargs):
     return trans_request(request, HERMES, token=token)
 
 
 @bp.get('/applicant/batch')
-@jwt_required(allow=[ROOT_ADMIN, ])
+@jwt_required(allow=[ROOT_ADMIN, ADMIN, ])
 async def applicant_batch_get(request: Request, token: Token, *args, **kwargs):
     return trans_request(request, HERMES, token=token)
 
