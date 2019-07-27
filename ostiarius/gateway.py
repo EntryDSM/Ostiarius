@@ -32,7 +32,7 @@ def trans_request(request: Request, host: str, url: str = None, token: Token = N
     try:
         r: Response = getattr(requests, request.method.lower())(
             url=host+url if url else host+request.path,
-            data=None if request.method == "GET" else request.json,
+            json=None if request.method == "GET" else request.json,
             headers=headers,
             params=request.args,
         )
