@@ -123,8 +123,8 @@ async def applicant_batch_get(request: Request, token: Token, *args, **kwargs):
     return trans_request(request, HERMES, token=token)
 
 
-@bp.patch('/applicant/<email>')
-@jwt_required(allow=[SERVICE, ])
+@bp.get('/applicant/<email>')
+@jwt_required(allow=[ADMIN, ROOT_ADMIN, SERVICE, ])
 async def applicant_email_patch(request: Request, token: Token, email: str, *args, **kwargs):
     return trans_request(request, HERMES, token=token)
 
