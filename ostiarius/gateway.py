@@ -8,7 +8,7 @@ from requests import Response
 from sanic import Blueprint
 from sanic.request import Request
 from sanic.response import json, HTTPResponse, file
-from sanic_jwt_extended import create_access_token, jwt_required
+from sanic_jwt_extended import create_access_token, create_refresh_token, jwt_required
 from sanic_jwt_extended.tokens import Token
 from requests.exceptions import ConnectionError
 
@@ -52,24 +52,32 @@ def trans_request(request: Request, host: str, url: str = None, token: Token = N
 """
 Temp Login
 """
-@bp.post('/login')
+@bp.post('/applicant/login')
 async def login(request: Request):
-    username = request.json.get('username', None)
+    email = request.json.get('email', None)
+    password = request.json.get('password', None)
 
-    access_token = await create_access_token(identity=username, role=APPLICANT, app=request.app)
+    access_token = await create_access_token(identity=email, role=APPLICANT, app=request.app)
+    refresh_token = await create_refresh_token(identity=email, app=request.app)
+
     return json(dict(
-        access_token=access_token
-    ), status=200)
+        access=access_token,
+        refresh=refresh_token
+    ), status=201)
 
 
 @bp.post('/admin/login')
 async def login(request: Request):
-    username = request.json.get('username', None)
+    email = request.json.get('email', None)
+    password = request.json.get('password', None)
 
-    access_token = await create_access_token(identity=username, role=ROOT_ADMIN, app=request.app)
+    access_token = await create_access_token(identity=email, role=ROOT_ADMIN, app=request.app)
+    refresh_token = await create_refresh_token(identity=email, app=request.app)
+
     return json(dict(
-        access_token=access_token
-    ), status=200)
+        access=access_token,
+        refresh=refresh_token
+    ), status=201)
 
 
 """
