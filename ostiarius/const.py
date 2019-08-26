@@ -1,4 +1,3 @@
-SERVICE = "Service"
 ROOT_ADMIN = "RootAdmin"
 ADMIN = "Admin"
 INTERVIEWER = "Interviewer"
