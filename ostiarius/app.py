@@ -1,5 +1,7 @@
+import os
 import uuid
 
+from entry_logger_sanic import set_logger
 from sanic import Sanic
 from sanic.exceptions import SanicException
 from sanic.response import text, json
@@ -13,6 +15,9 @@ from ostiarius.exceptions import ServiceUnavailable
 
 def create_app() -> Sanic:
     _app = Sanic("ostiarius")
+
+    log_path = os.path.dirname(__file__).replace("/ostiarius", "")
+    set_logger(_app, log_path)
 
     _app.config['JWT_SECRET_KEY'] = settings.jwt_secret_key
     _app.config['RBAC_ENABLE'] = True
