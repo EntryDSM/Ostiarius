@@ -2,7 +2,7 @@ FROM python:3.7
 MAINTAINER Seonghyeon Kim "seonghyeon@entrydsm.hs.kr"
 
 ENV GITHUB_TOKEN $GITHUB_TOKEN
-ENV RUN_ENV $RUN_ENV
+ENV RUN_ENV "prod"
 
 COPY . .
 WORKDIR .
