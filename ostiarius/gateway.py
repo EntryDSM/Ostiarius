@@ -14,7 +14,7 @@ from requests.exceptions import ConnectionError
 
 import aiofiles
 
-from ostiarius.const import ROOT_ADMIN, HERMES, ADMIN, APPLICANT, UPLOAD_DIR
+from ostiarius.const import ROOT_ADMIN, HERMES, ADMIN, APPLICANT, UPLOAD_DIR, LV
 from ostiarius.exceptions import ServiceUnavailable
 
 bp = Blueprint("user", url_prefix="/api/v1")
@@ -31,7 +31,7 @@ def trans_request(request: Request, host: str, url: str = None, token: Token = N
 
     try:
         r: Response = getattr(requests, request.method.lower())(
-            url=host+url if url else host+request.path,
+            url=host + url if url else host + request.path,
             json=None if request.method == "GET" else request.json,
             headers=headers,
             params=request.args,
@@ -53,6 +53,8 @@ def trans_request(request: Request, host: str, url: str = None, token: Token = N
 """
 Temp Login
 """
+
+
 @bp.post('/applicant/login')
 async def login(request: Request):
     email = request.json.get('email', None)
@@ -84,6 +86,8 @@ async def login(request: Request):
 """
 Hermes Routing
 """
+
+
 @bp.post('/admin')
 @jwt_required(allow=[ROOT_ADMIN, ])
 async def admin_post(request: Request, token: Token, *args, **kwargs):
@@ -177,6 +181,8 @@ async def applicant_me_patch(request: Request, token: Token, *args, **kwargs):
 """
 Photo API
 """
+
+
 @bp.put('/applicant/me/photo')
 @jwt_required(allow=[APPLICANT, ])
 async def applicant_me_photo_put(request: Request, token: Token, *args, **kwargs):
@@ -272,37 +278,87 @@ async def applicant_me_photo_get(request: Request, token: Token, *args, **kwargs
 """
 Louis-Vuitton Routing
 """
+
+
 @bp.get('/applicant/<email>/classification')
-@jwt_required(allow=[ADMIN, ROOT_ADMIN])
-async def applicant_me_patch(request: Request, token: Token, email: str, *args, **kwargs):
-    return trans_request(request, HERMES, token=token)
+@jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
+async def applicant_email_classification_get(request: Request, token: Token, email: str, *args, **kwargs):
+    return trans_request(request, LV, token=token)
+
+
+@bp.patch('/applicant/<email>/classification')
+@jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
+async def applicant_email_classification_patch(request: Request, token: Token, email: str, *args, **kwargs):
+    return trans_request(request, LV, token=token)
 
 
 @bp.get('/applicant/me/classification')
 @jwt_required(allow=[APPLICANT, ])
-async def applicant_me_patch(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, HERMES, f"/applicant/{token.jwt_identity}/classification", token=token)
+async def applicant_me_classification_get(request: Request, token: Token, *args, **kwargs):
+    return trans_request(request, LV, f"/applicant/{token.jwt_identity}/classification", token=token)
 
 
 @bp.patch('/applicant/me/classification')
 @jwt_required(allow=[APPLICANT, ])
-async def applicant_me_patch(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, HERMES, f"/applicant/{token.jwt_identity}/classification", token=token)
+async def applicant_me_classification_patch(request: Request, token: Token, *args, **kwargs):
+    return trans_request(request, LV, f"/applicant/{token.jwt_identity}/classification", token=token)
 
 
 @bp.get('/applicant/<email>/document')
 @jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
-async def applicant_me_patch(request: Request, token: Token, email: str, *args, **kwargs):
-    return trans_request(request, HERMES, token=token)
+async def applicant_email_document_get(request: Request, token: Token, email: str, *args, **kwargs):
+    return trans_request(request, LV, token=token)
+
+
+@bp.patch('/applicant/<email>/document')
+@jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
+async def applicant_email_document_patch(request: Request, token: Token, email: str, *args, **kwargs):
+    return trans_request(request, LV, token=token)
 
 
 @bp.get('/applicant/me/document')
 @jwt_required(allow=[APPLICANT, ])
-async def applicant_me_patch(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, HERMES, f"/applicant/{token.jwt_identity}/document", token=token)
+async def applicant_me_document_get(request: Request, token: Token, *args, **kwargs):
+    return trans_request(request, LV, f"/applicant/{token.jwt_identity}/document", token=token)
 
 
 @bp.patch('/applicant/me/document')
 @jwt_required(allow=[APPLICANT, ])
-async def applicant_me_patch(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, HERMES, f"/applicant/{token.jwt_identity}/document", token=token)
+async def applicant_me_document_patch(request: Request, token: Token, *args, **kwargs):
+    return trans_request(request, LV, f"/applicant/{token.jwt_identity}/document", token=token)
+
+
+@bp.get('/applicant/<email>/diligence')
+@jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
+async def applicant_email_diligence_get(request: Request, token: Token, email: str, *args, **kwargs):
+    return trans_request(request, LV, token=token)
+
+
+@bp.patch('/applicant/<email>/diligence')
+@jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
+async def applicant_email_diligence_patch(request: Request, token: Token, email: str, *args, **kwargs):
+    return trans_request(request, LV, token=token)
+
+
+@bp.get('/applicant/<email>/ged-score')
+@jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
+async def applicant_email_ged_score_get(request: Request, token: Token, email: str, *args, **kwargs):
+    return trans_request(request, LV, token=token)
+
+
+@bp.patch('/applicant/<email>/ged-score')
+@jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
+async def applicant_email_ged_score_patch(request: Request, token: Token, email: str, *args, **kwargs):
+    return trans_request(request, LV, token=token)
+
+
+@bp.get('/applicant/<email>/academic-score')
+@jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
+async def applicant_email_academic_score_get(request: Request, token: Token, email: str, *args, **kwargs):
+    return trans_request(request, LV, token=token)
+
+
+@bp.patch('/applicant/<email>/academic-score')
+@jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
+async def applicant_email_academic_score_patch(request: Request, token: Token, email: str, *args, **kwargs):
+    return trans_request(request, LV, token=token)
