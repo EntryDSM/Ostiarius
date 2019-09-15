@@ -14,7 +14,7 @@ from requests.exceptions import ConnectionError
 
 import aiofiles
 
-from ostiarius.const import ROOT_ADMIN, HERMES, ADMIN, APPLICANT, UPLOAD_DIR, LV
+from ostiarius.const import ROOT_ADMIN, HERMES, ADMIN, APPLICANT, UPLOAD_DIR, LOUIS_VUITTON
 from ostiarius.exceptions import ServiceUnavailable
 
 bp = Blueprint("user", url_prefix="/api/v1")
@@ -283,82 +283,118 @@ Louis-Vuitton Routing
 @bp.get('/applicant/<email>/classification')
 @jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
 async def applicant_email_classification_get(request: Request, token: Token, email: str, *args, **kwargs):
-    return trans_request(request, LV, token=token)
+    return trans_request(request, LOUIS_VUITTON, token=token)
 
 
 @bp.patch('/applicant/<email>/classification')
 @jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
 async def applicant_email_classification_patch(request: Request, token: Token, email: str, *args, **kwargs):
-    return trans_request(request, LV, token=token)
+    return trans_request(request, LOUIS_VUITTON, token=token)
 
 
 @bp.get('/applicant/me/classification')
 @jwt_required(allow=[APPLICANT, ])
 async def applicant_me_classification_get(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, LV, f"/applicant/{token.jwt_identity}/classification", token=token)
+    return trans_request(request, LOUIS_VUITTON, f"/applicant/{token.jwt_identity}/classification", token=token)
 
 
 @bp.patch('/applicant/me/classification')
 @jwt_required(allow=[APPLICANT, ])
 async def applicant_me_classification_patch(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, LV, f"/applicant/{token.jwt_identity}/classification", token=token)
+    return trans_request(request, LOUIS_VUITTON, f"/applicant/{token.jwt_identity}/classification", token=token)
 
 
 @bp.get('/applicant/<email>/document')
 @jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
 async def applicant_email_document_get(request: Request, token: Token, email: str, *args, **kwargs):
-    return trans_request(request, LV, token=token)
+    return trans_request(request, LOUIS_VUITTON, token=token)
 
 
 @bp.patch('/applicant/<email>/document')
 @jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
 async def applicant_email_document_patch(request: Request, token: Token, email: str, *args, **kwargs):
-    return trans_request(request, LV, token=token)
+    return trans_request(request, LOUIS_VUITTON, token=token)
 
 
 @bp.get('/applicant/me/document')
 @jwt_required(allow=[APPLICANT, ])
 async def applicant_me_document_get(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, LV, f"/applicant/{token.jwt_identity}/document", token=token)
+    return trans_request(request, LOUIS_VUITTON, f"/applicant/{token.jwt_identity}/document", token=token)
 
 
 @bp.patch('/applicant/me/document')
 @jwt_required(allow=[APPLICANT, ])
 async def applicant_me_document_patch(request: Request, token: Token, *args, **kwargs):
-    return trans_request(request, LV, f"/applicant/{token.jwt_identity}/document", token=token)
+    return trans_request(request, LOUIS_VUITTON, f"/applicant/{token.jwt_identity}/document", token=token)
 
 
 @bp.get('/applicant/<email>/diligence')
 @jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
 async def applicant_email_diligence_get(request: Request, token: Token, email: str, *args, **kwargs):
-    return trans_request(request, LV, token=token)
+    return trans_request(request, LOUIS_VUITTON, token=token)
 
 
 @bp.patch('/applicant/<email>/diligence')
 @jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
 async def applicant_email_diligence_patch(request: Request, token: Token, email: str, *args, **kwargs):
-    return trans_request(request, LV, token=token)
+    return trans_request(request, LOUIS_VUITTON, token=token)
+
+
+@bp.get('/applicant/me/diligence')
+@jwt_required(allow=[APPLICANT, ])
+async def applicant_me_diligence_get(request: Request, token: Token, *args, **kwargs):
+    return trans_request(request, LOUIS_VUITTON, f"/applicant/{token.jwt_identity}/diligence", token=token)
+
+
+@bp.patch('/applicant/me/diligence')
+@jwt_required(allow=[APPLICANT, ])
+async def applicant_me_diligence_patch(request: Request, token: Token, *args, **kwargs):
+    return trans_request(request, LOUIS_VUITTON, f"/applicant/{token.jwt_identity}/diligence", token=token)
 
 
 @bp.get('/applicant/<email>/ged-score')
 @jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
 async def applicant_email_ged_score_get(request: Request, token: Token, email: str, *args, **kwargs):
-    return trans_request(request, LV, token=token)
+    return trans_request(request, LOUIS_VUITTON, token=token)
 
 
 @bp.patch('/applicant/<email>/ged-score')
 @jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
 async def applicant_email_ged_score_patch(request: Request, token: Token, email: str, *args, **kwargs):
-    return trans_request(request, LV, token=token)
+    return trans_request(request, LOUIS_VUITTON, token=token)
+
+
+@bp.get('/applicant/me/ged-score')
+@jwt_required(allow=[APPLICANT, ])
+async def applicant_me_ged_score_get(request: Request, token: Token, *args, **kwargs):
+    return trans_request(request, LOUIS_VUITTON, f"/applicant/{token.jwt_identity}/ged-score", token=token)
+
+
+@bp.patch('/applicant/me/ged-score')
+@jwt_required(allow=[APPLICANT, ])
+async def applicant_me_ged_score_patch(request: Request, token: Token, *args, **kwargs):
+    return trans_request(request, LOUIS_VUITTON, f"/applicant/{token.jwt_identity}/ged-score", token=token)
 
 
 @bp.get('/applicant/<email>/academic-score')
 @jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
 async def applicant_email_academic_score_get(request: Request, token: Token, email: str, *args, **kwargs):
-    return trans_request(request, LV, token=token)
+    return trans_request(request, LOUIS_VUITTON, token=token)
 
 
 @bp.patch('/applicant/<email>/academic-score')
 @jwt_required(allow=[ADMIN, ROOT_ADMIN, ])
 async def applicant_email_academic_score_patch(request: Request, token: Token, email: str, *args, **kwargs):
-    return trans_request(request, LV, token=token)
+    return trans_request(request, LOUIS_VUITTON, token=token)
+
+
+@bp.get('/applicant/me/academic-score')
+@jwt_required(allow=[APPLICANT, ])
+async def applicant_me_academic_score_get(request: Request, token: Token, *args, **kwargs):
+    return trans_request(request, LOUIS_VUITTON, f"/applicant/{token.jwt_identity}/academic-score", token=token)
+
+
+@bp.patch('/applicant/me/academic-score')
+@jwt_required(allow=[APPLICANT, ])
+async def applicant_me_academic_score_patch(request: Request, token: Token, *args, **kwargs):
+    return trans_request(request, LOUIS_VUITTON, f"/applicant/{token.jwt_identity}/academic-score", token=token)
