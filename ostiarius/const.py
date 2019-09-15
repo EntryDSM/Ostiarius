@@ -6,6 +6,7 @@ INTERVIEWER = "Interviewer"
 APPLICANT = "Applicant"
 
 HERMES = "http://hermes"
+CHANEL = "http://chanel"
 LOUIS_VUITTON = "http://lv"
 
 RUN_ENV = environ.get("RUN_ENV")
