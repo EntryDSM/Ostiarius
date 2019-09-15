@@ -6,7 +6,7 @@ INTERVIEWER = "Interviewer"
 APPLICANT = "Applicant"
 
 HERMES = "http://hermes"
-LV = "http://lv"
+LOUIS_VUITTON = "http://lv"
 
 RUN_ENV = environ.get("RUN_ENV")
 GITHUB_TOKEN = environ.get("GITHUB_TOKEN")
