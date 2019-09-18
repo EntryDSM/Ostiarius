@@ -14,7 +14,7 @@ from requests.exceptions import ConnectionError
 
 import aiofiles
 
-from ostiarius.const import ROOT_ADMIN, HERMES, ADMIN, APPLICANT, UPLOAD_DIR, LOUIS_VUITTON
+from ostiarius.const import ROOT_ADMIN, HERMES, ADMIN, APPLICANT, UPLOAD_DIR, LOUIS_VUITTON, CHANEL
 from ostiarius.exceptions import ServiceUnavailable
 
 bp = Blueprint("user", url_prefix="/api/v1")
@@ -51,36 +51,68 @@ def trans_request(request: Request, host: str, url: str = None, token: Token = N
 
 
 """
-Temp Login
+Chanel Routing
 """
 
 
+@bp.post('/applicant/signup')
+async def signup(request, *args, **kwargs):
+    return trans_request(request, CHANEL)
+
+
+@bp.post('/applicant/signup/verify')
+async def send_verify_email(request, *args, **kwargs):
+    return trans_request(request, CHANEL)
+
+
+@bp.get('/applicant/signup/verify/<email>/<verify_code>')
+async def verify_code(request, *args, **kwargs):
+    return trans_request(request, CHANEL)
+
+
 @bp.post('/applicant/login')
-async def login(request: Request):
-    email = request.json.get('email', None)
-    password = request.json.get('password', None)
+async def applicant_login(request, *args, **kwargs):
+    return trans_request(request, CHANEL)
 
-    access_token = await create_access_token(identity=email, role=APPLICANT, app=request.app)
-    refresh_token = await create_refresh_token(identity=email, app=request.app)
 
-    return json(dict(
-        access=access_token,
-        refresh=refresh_token
-    ), status=201)
+@bp.patch('/applicant/refresh')
+async def applicant_refresh(request, *args, **kwargs):
+    return trans_request(request, CHANEL)
+
+
+@bp.delete('/applicant/logout')
+async def applicant_logout(request, *args, **kwargs):
+    return trans_request(request, CHANEL)
 
 
 @bp.post('/admin/login')
-async def login(request: Request):
-    email = request.json.get('email', None)
-    password = request.json.get('password', None)
+async def admin_login(request, *args, **kwargs):
+    return trans_request(request, CHANEL)
 
-    access_token = await create_access_token(identity=email, role=ROOT_ADMIN, app=request.app)
-    refresh_token = await create_refresh_token(identity=email, app=request.app)
 
-    return json(dict(
-        access=access_token,
-        refresh=refresh_token
-    ), status=201)
+@bp.patch('/admin/refresh')
+async def admin_refresh(request, *args, **kwargs):
+    return trans_request(request, CHANEL)
+
+
+@bp.delete('/admin/logout')
+async def admin_logout(request, *args, **kwargs):
+    return trans_request(request, CHANEL)
+
+
+@bp.get('/applicant/password/reset')
+async def check_password_verify_code(request, *args, **kwargs):
+    return trans_request(request, CHANEL)
+
+
+@bp.put('/applicant/password/reset')
+async def reset_applicant_password(request, *args, **kwargs):
+    return trans_request(request, CHANEL)
+
+
+@bp.post('/applicant/password/reset')
+async def send_verification_email(request, *args, **kwargs):
+    return trans_request(request, CHANEL)
 
 
 """
