@@ -25,7 +25,7 @@ def create_app() -> Sanic:
     JWTManager(_app)
     CORS(_app, automatic_options=True)
 
-    @_app.get('/ping')
+    @_app.get('/api/v1/ping')
     async def ping(request):
         return text("pong")
 
