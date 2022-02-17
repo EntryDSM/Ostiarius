@@ -1,5 +1,5 @@
 requests == 2.22.0
-sanic == 19.3.1
+sanic == 20.12.6
 PyJWT==1.7.1
 Sanic_JWT_Extended == 0.3.1
 Sanic-Cors==0.9.8.post1
